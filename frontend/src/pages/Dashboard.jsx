@@ -10,7 +10,7 @@ const styles = `
   .ss-logo { font-family: 'Lora', serif; color: #e2efd9; font-size: 1.4rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
   .ss-logo-icon { color: #a3c585; display: flex; align-items: center; }
   .ss-role-badge { font-size: 10px; background: #4a6741; color: #fff; padding: 2px 8px; border-radius: 4px; margin-left: 10px; letter-spacing: 0.05em; }
-  .ss-nav a { font-size: 14px; color: #a3c585; text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; }
+  .ss-nav a { font-size: 14px; color: #a3c585; text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; cursor: pointer; }
   .ss-nav a:hover { color: #fff; }
   
   .ss-main { padding: 2.5rem 2rem; max-width: 1200px; margin: 0 auto; }
@@ -45,7 +45,6 @@ const styles = `
   .note-preview { font-size: 12px; color: #7a7363; font-style: italic; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-left: 2px solid #e0dcd0; padding-left: 8px; }
 `;
 
-// Icon Component
 const SproutIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M7 20h10" /><path d="M10 20c5.5-2.5 8-6.4 8-10 0-4.4-3.6-8-8-8s-8 3.6-8 8c0 3.6 2.5 7.5 8 10Z" /><path d="M13 20c.5-3 1-6.5.5-10" />
@@ -61,12 +60,15 @@ const Dashboard = () => {
   const { token, user, logout } = useContext(AuthContext);
   const isAdmin = user?.is_staff || user?.role === 'admin';
 
+  // Define the dynamic API URL based on environment
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
   const selectStyle = { padding: '6px 10px', borderRadius: '8px', border: '1px solid #e0dcd0', backgroundColor: '#f8f6f0', color: '#3e3a31', cursor: isAdmin ? 'default' : 'pointer' };
   const inputStyle = { padding: '8px 12px', borderRadius: '8px', border: '1px solid #e0dcd0', width: '100%', fontSize: '13px', backgroundColor: '#fff' };
 
   const fetchFields = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/fields/', {
+      const res = await axios.get(`${API_URL}/api/fields/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setFields(res.data);
@@ -76,7 +78,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/users/', {
+        const res = await axios.get(`${API_URL}/api/users/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAgents(res.data);
@@ -87,7 +89,7 @@ const Dashboard = () => {
       fetchFields();
       if (isAdmin) fetchAgents();
     }
-  }, [token, isAdmin]);
+  }, [token, isAdmin, API_URL]);
 
   const handleCreateField = async (e) => {
     e.preventDefault();
@@ -98,7 +100,7 @@ const Dashboard = () => {
     };
 
     try {
-      await axios.post('http://localhost:8000/api/fields/', payload, {
+      await axios.post(`${API_URL}/api/fields/`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setShowModal(false);
@@ -112,7 +114,7 @@ const Dashboard = () => {
 
   const handleUpdate = async (fieldId, newStage, newNotes) => {
     try {
-      const res = await axios.patch(`http://localhost:8000/api/fields/${fieldId}/`, 
+      const res = await axios.patch(`${API_URL}/api/fields/${fieldId}/`, 
         { current_stage: newStage, notes: newNotes },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -125,7 +127,7 @@ const Dashboard = () => {
       updatedData.agent = updatedData.agent === "" ? null : parseInt(updatedData.agent);
     }
     try {
-      const res = await axios.patch(`http://localhost:8000/api/fields/${fieldId}/`, 
+      const res = await axios.patch(`${API_URL}/api/fields/${fieldId}/`, 
         updatedData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -136,7 +138,7 @@ const Dashboard = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this field?")) return;
     try {
-      await axios.delete(`http://localhost:8000/api/fields/${id}/`, {
+      await axios.delete(`${API_URL}/api/fields/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setFields(fields.filter(f => f.id !== id));
@@ -161,7 +163,7 @@ const Dashboard = () => {
           <span className="ss-role-badge">{isAdmin ? 'ADMIN' : 'AGENT'}</span>
         </div>
         <div className="ss-nav">
-          <a href="#" onClick={(e) => { e.preventDefault(); logout(); }}>Logout</a>
+          <a onClick={(e) => { e.preventDefault(); logout(); }}>Logout</a>
         </div>
       </nav>
 
