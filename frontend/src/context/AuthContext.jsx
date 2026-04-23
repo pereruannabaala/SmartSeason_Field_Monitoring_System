@@ -8,16 +8,15 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
 
     const login = async (username, password) => {
-        const res = await axios.post('http://localhost:8000/api/token/', { username, password });
+    // We use the environment variable here
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        
+        const res = await axios.post(`${API_URL}/api/token/`, { username, password });
         
         const accessToken = res.data.access;
         
-        // Use the data from your backend. 
-        // If your backend sends 'is_staff', use that to set the role.
         const userData = { 
             username, 
-            // Logic: if is_staff is true, they are an 'admin' (Coordinator), 
-            // otherwise they are an 'agent' (Field Agent).
             role: res.data.is_staff ? 'admin' : 'agent' 
         }; 
 
