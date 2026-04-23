@@ -5,11 +5,16 @@ from rest_framework.routers import DefaultRouter
 from fields.views import FieldViewSet, MyTokenObtainPairView, agent_list
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 
 router = DefaultRouter()
 router.register(r'fields', FieldViewSet, basename='field')
 
+def welcome(request):
+    return JsonResponse({"message": "SmartSeason API is running!"})
+
 urlpatterns = [
+    path('', welcome),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
