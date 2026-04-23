@@ -1,6 +1,15 @@
 # SmartSeason: Field Monitoring System
  SmartSeason is a full-stack field monitoring application designed to bridge the gap between agricultural administrators and field agents. Built with a **Django REST Framework** backend and a **React** frontend, it provides real-time tracking of crop stages, automated status calculations, and streamlined observation logging.
 
+## Known Behavior
+
+You may experience slight delays when loading data or seeing recent updates.
+
+This application is deployed on Vercel, which uses a serverless architecture. Because serverless environments do not support persistent local storage, the project uses an external database hosted on Railway.
+
+As a result, data requests involve network calls between Vercel and Railway, which can introduce minor latency, especially during database synchronization or updates.
+
+Please allow a few moments for changes to reflect.
 ## Demo credentials
 For testing and review purposes, use the following accounts to explore the different role-based interfaces:
 | Role | Username | Password | Access Level |
